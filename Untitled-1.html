@@ -1,0 +1,597 @@
+<!doctype html>
+<html lang="es" class="h-full">
+ <head><script src="/_sdk/telemetry_sdk.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tech Collective Blog</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <script src="/_sdk/data_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+  <style>
+    * { font-family: 'Outfit', sans-serif; }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    
+    html, body, #app { height: 100%; width: 100%; }
+    body { background: #ffffff; color: #1f2937; }
+    #app { background: #ffffff; color: #1f2937; }
+    
+    /* Gradientes de categorías */
+    .cat-ia { background: linear-gradient(135deg, #f97316, #fb923c); }
+    .cat-prog { background: linear-gradient(135deg, #f97316, #fb923c); }
+    .cat-games { background: linear-gradient(135deg, #f97316, #fb923c); }
+    .cat-innov { background: linear-gradient(135deg, #f97316, #fb923c); }
+    
+    /* Animaciones */
+    .fade-in { animation: fadeIn 0.4s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    
+    .slide-in-left { animation: slideInLeft 0.5s ease-out; }
+    @keyframes slideInLeft { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+    
+    .pulse-glow {
+      animation: pulseGlow 2s ease-in-out infinite;
+    }
+    button, input[type="button"], input[type="submit"], .btn-primary {
+      background-color: #f97316;
+      color: #ffffff;
+      border-color: transparent;
+    }
+    @keyframes pulseGlow {
+      0%, 100% { filter: drop-shadow(0 0 8px rgba(99, 102, 241, 0.3)); }
+      50% { filter: drop-shadow(0 0 16px rgba(99, 102, 241, 0.5)); }
+    }
+    
+    /* Tarjetas mejoradas */
+    .card-hover {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      background: #ffffff;
+      box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .card-hover::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.05) 100%);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      pointer-events: none;
+    }
+    
+    .card-hover:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 24px 48px rgba(249, 115, 22, 0.18);
+      border-color: rgba(249, 115, 22, 0.2);
+    }
+    
+    .card-hover:hover::before {
+      opacity: 1;
+    }
+    
+    /* Header clean white style */
+    header {
+      background: #ffffff;
+      border-bottom: 1px solid #e5e7eb;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    
+    /* Filtros mejorados */
+    .filter-btn {
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .filter-btn::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      transition: width 0.5s, height 0.5s;
+    }
+    
+    .filter-btn:active::before {
+      width: 300px;
+      height: 300px;
+    }
+    
+    .filter-btn.active {
+      box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+    }
+    
+    /* Efecto del grid */
+    #articles-grid {
+      animation: fadeIn 0.6s ease-out;
+    }
+    
+    /* Modal mejorado */
+    #modal-detail, #modal-new, #modal-delete {
+      backdrop-filter: blur(4px);
+      animation: fadeIn 0.3s ease-out;
+    }
+    
+    .modal-content {
+      background: #ffffff;
+      border: 1px solid rgba(226, 232, 240, 0.9);
+    }
+    
+    /* Efecto hover en botones */
+    button:not(.filter-btn) {
+      transition: all 0.3s ease;
+    }
+    
+    button:not(.filter-btn):hover:not(:disabled) {
+      transform: translateY(-2px);
+    }
+    
+    /* Input mejorado */
+    input, textarea, select {
+      transition: all 0.3s ease;
+    }
+    
+    input:focus, textarea:focus, select:focus {
+      box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+      border-color: rgba(99, 102, 241, 0.8) !important;
+    }
+    
+    /* Texto vacío */
+    #empty-state {
+      animation: fadeIn 0.4s ease-out;
+    }
+    
+    /* Scroll mejorado */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: rgba(99, 102, 241, 0.05);
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: rgba(99, 102, 241, 0.3);
+      border-radius: 4px;
+      transition: background 0.3s ease;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(99, 102, 241, 0.6);
+    }
+  </style>
+  <style>body { box-sizing: border-box; }</style>
+ </head>
+ <body class="h-full">
+  <div id="app" class="h-full w-full bg-white text-slate-900 overflow-auto">
+   <!-- Header -->
+   <header class="border-b border-slate-200 px-6 py-6 slide-in-left relative z-10">
+    <div class="max-w-6xl mx-auto flex items-center justify-between relative z-10">
+     <div class="flex items-center gap-4 flex-1">
+      <div class="relative">
+       <svg width="56" height="56" viewbox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" class="pulse-glow">
+        <!-- Logo: Tech circuit design --> <rect x="8" y="8" width="32" height="32" rx="8" fill="url(#grad1)" stroke="#6366f1" stroke-width="1.5" /> <circle cx="16" cy="16" r="3" fill="#60a5fa" /> <circle cx="32" cy="16" r="3" fill="#f59e0b" /> <circle cx="24" cy="32" r="3" fill="#10b981" /> <line x1="16" y1="16" x2="24" y2="32" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="3,2" opacity="0.6" /> <line x1="32" y1="16" x2="24" y2="32" stroke="#6366f1" stroke-width="1.5" stroke-dasharray="3,2" opacity="0.6" /> <defs>
+         <lineargradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#6366f1;stop-opacity:0.15" />
+          <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:0.25" />
+         </lineargradient>
+        </defs>
+       </svg>
+      </div>
+      <div>
+       <h1 id="blog-title" class="text-3xl font-bold text-slate-900">Tech Collective</h1>
+       <p id="blog-subtitle" class="text-sm text-slate-500 mt-1 font-medium tracking-wide">IA · Programación · Videojuegos · Innovación</p>
+      </div>
+     </div><button id="btn-new" class="flex items-center gap-2 bg-[#f97316] hover:bg-[#ea580c] text-white px-6 py-2.5 rounded-lg font-semibold text-sm transition-all shadow-lg hover:shadow-[0_8px_24px_rgba(249,115,22,0.35)]"> + <i data-lucide="plus" style="width:18px;height:18px;"></i> Nuevo Artículo </button>
+    </div>
+   </header><!-- Category Filter -->
+   <nav class="px-6 py-4 border-b border-slate-200">
+    <div class="max-w-6xl mx-auto flex gap-2 flex-wrap">
+     <button data-filter="all" class="filter-btn px-3 py-1.5 rounded-full text-xs font-medium bg-[#f97316] text-white">Todos</button> <button data-filter="IA" class="filter-btn px-3 py-1.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600 hover:bg-[#f97316] hover:text-white">🤖 IA</button> <button data-filter="Programación" class="filter-btn px-3 py-1.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600 hover:bg-[#f97316] hover:text-white">💻 Programación</button> <button data-filter="Videojuegos" class="filter-btn px-3 py-1.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600 hover:bg-[#f97316] hover:text-white">🎮 Videojuegos</button> <button data-filter="Innovación" class="filter-btn px-3 py-1.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600 hover:bg-[#f97316] hover:text-white">🚀 Innovación</button>
+    </div>
+   </nav><!-- Main Content -->
+   <section class="px-6 pt-10">
+    <div class="max-w-6xl mx-auto mb-8">
+     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+      <div>
+       <h2 class="text-2xl font-bold text-slate-900">Artículos modelo</h2>
+       <p class="text-slate-600 mt-2">Ejemplos de artículos listos para cada tema: IA, Programación, Videojuegos e Innovación.</p>
+      </div>
+     </div>
+    </div>
+    <div id="model-articles-grid" class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+      <article class="bg-white rounded-xl p-6 card-hover border border-slate-200">
+        <span class="cat-ia text-xs font-bold px-3 py-1.5 rounded-full text-white inline-block mb-4 shadow-lg">🤖 IA</span>
+        <h3 class="text-lg font-bold text-slate-900 mb-3">GPT-5: La próxima revolución en IA</h3>
+        <p class="text-sm text-slate-600 mb-5 leading-relaxed">Un vistazo a los avances que harán la inteligencia artificial generativa más poderosa y accesible.</p>
+        <p class="text-xs text-slate-500 mb-4">Modelo listo para inspirar tu siguiente artículo.</p>
+        <div class="mt-4 border-t border-slate-200 pt-4 text-xs text-slate-500"><span class="model-author font-medium text-slate-700"></span> · <span class="model-date"></span></div>
+      </article>
+      <article class="bg-white rounded-xl p-6 card-hover border border-slate-200">
+        <span class="cat-prog text-xs font-bold px-3 py-1.5 rounded-full text-white inline-block mb-4 shadow-lg">💻 Programación</span>
+        <h3 class="text-lg font-bold text-slate-900 mb-3">Rust vs Go: ¿Cuál elegir?</h3>
+        <p class="text-sm text-slate-600 mb-5 leading-relaxed">Comparativa clara de dos lenguajes modernos para desarrollo rápido y seguro.</p>
+        <p class="text-xs text-slate-500 mb-4">Perfecto como artículo técnico de referencia.</p>
+        <div class="mt-4 border-t border-slate-200 pt-4 text-xs text-slate-500"><span class="model-author font-medium text-slate-700"></span> · <span class="model-date"></span></div>
+      </article>
+      <article class="bg-white rounded-xl p-6 card-hover border border-slate-200">
+        <span class="cat-games text-xs font-bold px-3 py-1.5 rounded-full text-white inline-block mb-4 shadow-lg">🎮 Videojuegos</span>
+        <h3 class="text-lg font-bold text-slate-900 mb-3">Baldur's Gate 3: Narrativa interactiva</h3>
+        <p class="text-sm text-slate-600 mb-5 leading-relaxed">Análisis del RPG que redefine la historia y las decisiones en los videojuegos.</p>
+        <p class="text-xs text-slate-500 mb-4">Una guía de temas para un artículo de gaming profundo.</p>
+        <div class="mt-4 border-t border-slate-200 pt-4 text-xs text-slate-500"><span class="model-author font-medium text-slate-700"></span> · <span class="model-date"></span></div>
+      </article>
+      <article class="bg-white rounded-xl p-6 card-hover border border-slate-200">
+        <span class="cat-innov text-xs font-bold px-3 py-1.5 rounded-full text-white inline-block mb-4 shadow-lg">🚀 Innovación</span>
+        <h3 class="text-lg font-bold text-slate-900 mb-3">Blockchain más allá del Bitcoin</h3>
+        <p class="text-sm text-slate-600 mb-5 leading-relaxed">Explora aplicaciones innovadoras de blockchain fuera del mundo de las criptomonedas.</p>
+        <p class="text-xs text-slate-500 mb-4">Idea ideal para un artículo sobre tecnología disruptiva.</p>
+        <div class="mt-4 border-t border-slate-200 pt-4 text-xs text-slate-500"><span class="model-author font-medium text-slate-700"></span> · <span class="model-date"></span></div>
+      </article>
+    </div>
+   </section>
+   <main class="px-6 py-10">
+    <div id="articles-grid" class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    </div>
+    <p id="empty-state" class="hidden text-center text-slate-500 py-20 text-lg font-medium">✨ No hay artículos aún. ¡Crea el primero!</p>
+   </main><!-- Article Detail Modal -->
+   <div id="modal-detail" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[85%] overflow-auto p-8 fade-in border border-slate-200 shadow-lg">
+     <div class="flex justify-between items-start mb-4">
+      <span id="detail-cat" class="text-xs font-medium px-2 py-1 rounded-full text-white"></span> <button id="btn-close-detail" class="text-[#64748b] hover:text-white"><i data-lucide="x" style="width:20px;height:20px;"></i></button>
+     </div>
+     <h2 id="detail-title" class="text-2xl font-bold text-[#f1f5f9] mb-2"></h2>
+     <p class="text-sm text-[#64748b] mb-6"><span id="detail-author"></span> · <span id="detail-date"></span></p>
+     <div id="detail-content" class="text-slate-700 leading-relaxed whitespace-pre-wrap"></div><button id="btn-delete-article" class="mt-6 flex items-center gap-1 text-xs text-[#f97316] hover:text-[#ea580c] transition-colors"> <i data-lucide="trash-2" style="width:14px;height:14px;"></i> Eliminar artículo </button>
+    </div>
+   </div><!-- New Article Modal -->
+   <div id="modal-new" class="hidden fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-8 fade-in border border-slate-200 shadow-lg">
+     <div class="flex justify-between items-center mb-6">
+      <h2 class="text-xl font-bold text-slate-900">Nuevo Artículo</h2><button id="btn-close-new" class="flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors"><i data-lucide="x" style="width:20px;height:20px;"></i> Cerrar</button>
+     </div>
+     <form id="form-article" class="space-y-4">
+      <div>
+       <label for="inp-title" class="block text-xs font-medium text-slate-500 mb-1">Título</label> <input id="inp-title" required class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-[#f97316]">
+      </div>
+      <div>
+       <label for="inp-author" class="block text-xs font-medium text-slate-500 mb-1">Autor</label> <input id="inp-author" required class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-[#f97316]">
+      </div>
+      <div>
+       <label for="inp-category" class="block text-xs font-medium text-slate-500 mb-1">Categoría</label> <select id="inp-category" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-[#f97316]"> <option value="IA">🤖 IA</option> <option value="Programación">💻 Programación</option> <option value="Videojuegos">🎮 Videojuegos</option> <option value="Innovación">🚀 Innovación</option> </select>
+      </div>
+      <div>
+       <label for="inp-excerpt" class="block text-xs font-medium text-slate-500 mb-1">Resumen</label> <input id="inp-excerpt" required class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-[#f97316]" placeholder="Breve descripción...">
+      </div>
+      <div>
+       <label for="inp-content" class="block text-xs font-medium text-slate-500 mb-1">Contenido</label> <textarea id="inp-content" required rows="5" class="w-full bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm text-slate-900 focus:outline-none focus:border-[#f97316] resize-none"></textarea>
+      </div><button type="submit" id="btn-submit" class="w-full bg-[#f97316] hover:bg-[#ea580c] text-white font-medium py-2.5 rounded-lg text-sm transition-colors"> Publicar </button>
+     </form>
+    </div>
+   </div><!-- Delete Confirmation -->
+   <div id="modal-delete" class="hidden fixed inset-0 bg-black/70 z-[60] flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-6 fade-in text-center border border-slate-200 shadow-lg">
+     <p class="text-[#f1f5f9] font-medium mb-4">¿Eliminar este artículo?</p>
+     <div class="flex gap-3 justify-center">
+      <button id="btn-cancel-delete" class="px-4 py-2 rounded-lg bg-slate-100 text-slate-600 text-sm hover:bg-slate-200">Cancelar</button> <button id="btn-confirm-delete" class="px-4 py-2 rounded-lg bg-[#f97316] text-white text-sm hover:bg-[#ea580c]">Eliminar</button>
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
+  // State
+  let articles = [];
+  let currentFilter = 'all';
+  let selectedArticle = null;
+
+  const defaultConfig = {
+    blog_title: 'Tech Collective',
+    blog_subtitle: 'IA · Programación · Videojuegos · Innovación',
+    background_color: '#0f1117',
+    surface_color: '#1a1f2e',
+    text_color: '#e2e8f0',
+    primary_color: '#6366f1',
+    secondary_color: '#94a3b8',
+    font_family: 'Outfit',
+    font_size: 16
+  };
+
+  function catClass(cat) {
+    const m = { 'IA': 'cat-ia', 'Programación': 'cat-prog', 'Videojuegos': 'cat-games', 'Innovación': 'cat-innov' };
+    return m[cat] || 'cat-ia';
+  }
+
+  function catEmoji(cat) {
+    const m = { 'IA': '🤖', 'Programación': '💻', 'Videojuegos': '🎮', 'Innovación': '🚀' };
+    return m[cat] || '💡';
+  }
+
+  function renderArticles() {
+    const grid = document.getElementById('articles-grid');
+    const empty = document.getElementById('empty-state');
+    const filtered = currentFilter === 'all' ? articles : articles.filter(a => a.category === currentFilter);
+
+    if (filtered.length === 0) {
+      grid.innerHTML = '';
+      empty.classList.remove('hidden');
+      return;
+    }
+    empty.classList.add('hidden');
+
+    const existingCards = new Map([...grid.children].map(el => [el.dataset.id, el]));
+    const fragment = document.createDocumentFragment();
+
+    filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).forEach(article => {
+      const id = article.__backendId;
+      if (existingCards.has(id)) {
+        const el = existingCards.get(id);
+        el.querySelector('.card-title').textContent = article.title;
+        el.querySelector('.card-excerpt').textContent = article.excerpt;
+        el.querySelector('.card-author').textContent = article.author;
+        fragment.appendChild(el);
+        existingCards.delete(id);
+      } else {
+        const card = document.createElement('div');
+        card.dataset.id = id;
+        card.className = 'bg-white rounded-xl p-6 card-hover cursor-pointer border border-slate-200 group';
+        card.innerHTML = `
+          <span class="${catClass(article.category)} text-xs font-bold px-3 py-1.5 rounded-full text-white inline-block mb-4 shadow-lg">${catEmoji(article.category)} ${article.category}</span>
+          <h3 class="card-title text-lg font-bold text-[#f1f5f9] mb-3 line-clamp-2 group-hover:text-[#c7d2e0] transition-colors">${article.title}</h3>
+          <p class="card-excerpt text-sm text-slate-600 mb-5 line-clamp-3 leading-relaxed">${article.excerpt}</p>
+          <div class="flex justify-between items-center pt-4 border-t border-slate-200">
+            <p class="text-xs text-slate-500"><span class="card-author font-medium text-slate-700">${article.author}</span> · ${new Date(article.created_at).toLocaleDateString('es')}</p>
+            <i data-lucide="arrow-right" style="width:16px;height:16px;" class="text-[#6366f1] opacity-0 group-hover:opacity-100 transition-opacity"></i>
+          </div>
+        `;
+        card.addEventListener('click', () => openDetail(article));
+        fragment.appendChild(card);
+      }
+    });
+    existingCards.forEach(el => el.remove());
+    grid.innerHTML = '';
+    grid.appendChild(fragment);
+  }
+
+  function openDetail(article) {
+    selectedArticle = article;
+    document.getElementById('detail-title').textContent = article.title;
+    document.getElementById('detail-author').textContent = article.author;
+    document.getElementById('detail-date').textContent = new Date(article.created_at).toLocaleDateString('es');
+    document.getElementById('detail-content').textContent = article.content;
+    const catEl = document.getElementById('detail-cat');
+    catEl.textContent = catEmoji(article.category) + ' ' + article.category;
+    catEl.className = `text-xs font-medium px-2 py-1 rounded-full text-white ${catClass(article.category)}`;
+    document.getElementById('modal-detail').classList.remove('hidden');
+  }
+
+  // Filters
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentFilter = btn.dataset.filter;
+      document.querySelectorAll('.filter-btn').forEach(b => {
+        b.className = b === btn
+          ? 'filter-btn px-3 py-1.5 rounded-full text-xs font-medium bg-[#f97316] text-white'
+          : 'filter-btn px-3 py-1.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600 hover:bg-[#f97316] hover:text-white';
+      });
+      renderArticles();
+    });
+  });
+
+  // New article modal
+  document.getElementById('btn-new').addEventListener('click', () => document.getElementById('modal-new').classList.remove('hidden'));
+  document.getElementById('btn-close-new').addEventListener('click', () => document.getElementById('modal-new').classList.add('hidden'));
+  document.getElementById('modal-new').addEventListener('click', (event) => {
+    if (event.target.id === 'modal-new') {
+      document.getElementById('modal-new').classList.add('hidden');
+    }
+  });
+  document.getElementById('btn-close-detail').addEventListener('click', () => document.getElementById('modal-detail').classList.add('hidden'));
+
+  // Form submit
+  document.getElementById('form-article').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (articles.length >= 999) {
+      document.getElementById('btn-submit').textContent = '⚠️ Límite alcanzado (999)';
+      return;
+    }
+    const btn = document.getElementById('btn-submit');
+    btn.disabled = true;
+    btn.textContent = 'Publicando...';
+
+    const result = await window.dataSdk.create({
+      title: document.getElementById('inp-title').value,
+      author: document.getElementById('inp-author').value,
+      category: document.getElementById('inp-category').value,
+      excerpt: document.getElementById('inp-excerpt').value,
+      content: document.getElementById('inp-content').value,
+      created_at: new Date().toISOString()
+    });
+
+    btn.disabled = false;
+    btn.textContent = 'Publicar';
+    if (result.isOk) {
+      document.getElementById('form-article').reset();
+      document.getElementById('modal-new').classList.add('hidden');
+    }
+  });
+
+  // Delete
+  document.getElementById('btn-delete-article').addEventListener('click', () => {
+    document.getElementById('modal-delete').classList.remove('hidden');
+  });
+  document.getElementById('btn-cancel-delete').addEventListener('click', () => document.getElementById('modal-delete').classList.add('hidden'));
+  document.getElementById('btn-confirm-delete').addEventListener('click', async () => {
+    if (!selectedArticle) return;
+    const btn = document.getElementById('btn-confirm-delete');
+    btn.disabled = true;
+    btn.textContent = 'Eliminando...';
+    const result = await window.dataSdk.delete(selectedArticle);
+    btn.disabled = false;
+    btn.textContent = 'Eliminar';
+    if (result.isOk) {
+      document.getElementById('modal-delete').classList.add('hidden');
+      document.getElementById('modal-detail').classList.add('hidden');
+      selectedArticle = null;
+    }
+  });
+
+  function randomModelInfo() {
+    const authors = [
+      'Isabel Torres',
+      'Juan Martín',
+      'Lucía Fernández',
+      'Mario Reyes',
+      'Ariana Gómez',
+      'Pablo Sosa',
+      'Camila Vidal',
+      'Diego Molina',
+      'Marta Álvarez',
+      'Andrés Prieto'
+    ];
+    const cardElements = document.querySelectorAll('#model-articles-grid article');
+    cardElements.forEach(card => {
+      const randomAuthor = authors[Math.floor(Math.random() * authors.length)];
+      const daysAgo = Math.floor(Math.random() * 20) + 1;
+      const date = new Date(Date.now() - daysAgo * 24 * 60 * 60 * 1000);
+      const formattedDate = date.toLocaleDateString('es', { day: '2-digit', month: 'short', year: 'numeric' });
+      const authorEl = card.querySelector('.model-author');
+      const dateEl = card.querySelector('.model-date');
+      if (authorEl) authorEl.textContent = randomAuthor;
+      if (dateEl) dateEl.textContent = formattedDate;
+    });
+  }
+
+  randomModelInfo();
+
+  // Data SDK
+  const dataHandler = {
+    onDataChanged(data) {
+      articles = data;
+      renderArticles();
+    }
+  };
+
+  // Artículos de ejemplo
+  const sampleArticles = [
+    {
+      title: "GPT-5: La próxima revolución en IA generativa",
+      author: "María García",
+      category: "IA",
+      excerpt: "Descubre qué esperar de la próxima generación de modelos de lenguaje y cómo transformarán la industria tecnológica.",
+      content: "Los últimos avances en inteligencia artificial generativa nos acercan cada vez más a sistemas verdaderamente autónomos. GPT-5 promete mejoras significativas en comprensión contextual, razonamiento lógico y capacidades multimodales. Los expertos predicen que esta versión marcará un punto de inflexión en cómo interactuamos con la tecnología, con aplicaciones revolucionarias en medicina, educación y desarrollo de software."
+    },
+    {
+      title: "Rust vs Go: ¿Cuál elegir en 2024?",
+      author: "Carlos López",
+      category: "Programación",
+      excerpt: "Comparativa detallada entre dos lenguajes de programación modernos que lideran el desarrollo de sistemas.",
+      content: "Rust y Go son dos lenguajes que compiten por convertirse en el estándar para desarrollo de software de alto rendimiento. Rust ofrece seguridad de memoria sin garbage collector, mientras que Go destaca por su simplicidad y compilación rápida. En este análisis exploramos cuándo usar cada uno, sus ventajas competitivas y qué cosas harían que los desarrolladores cambien de preferencia."
+    },
+    {
+      title: "Baldur's Gate 3: Un hito en narrativa interactiva",
+      author: "Alex Pérez",
+      category: "Videojuegos",
+      excerpt: "Análisis profundo del juego que redefinió las expectativas de los RPG y la narrativa en videojuegos modernos.",
+      content: "Baldur's Gate 3 no es solo un juego, es una experiencia narrativa revolucionaria. Con miles de líneas de diálogo, decisiones que realmente importan y mundos interconectados llenos de secretos, Larian Studios demostró que la verdadera libertad de juego es posible. El sistema de turnos, la personalización y las cinemáticas sin precedentes hacen de este título una obra maestra."
+    },
+    {
+      title: "Blockchain más allá del Bitcoin",
+      author: "David Chen",
+      category: "Innovación",
+      excerpt: "Explora las aplicaciones emergentes de la tecnología blockchain en sectores distintos a las criptomonedas.",
+      content: "Aunque Bitcoin popularizó blockchain, sus verdaderas aplicaciones transformadoras van mucho más allá de las criptomonedas. Desde supply chain management hasta identidad digital, salud y contratos inteligentes, blockchain está revolucionando cómo verificamos información y ejecutamos acuerdos. Descubre cómo esta tecnología está siendo implementada en empresas Fortune 500."
+    },
+    {
+      title: "Transformers: La arquitectura que cambió todo",
+      author: "Elena Rodríguez",
+      category: "IA",
+      excerpt: "Un viaje profundo por la arquitectura transformer que fundamenta todos los modelos modernos de lenguaje.",
+      content: "Los transformers revolucionaron el procesamiento del lenguaje natural al introducir el mecanismo de atención. Esta arquitectura, propuesta en 2017, permitió el entrenamiento paralelo masivo y la comprensión contextual sin precedentes. Hoy, todos los grandes modelos de IA—desde ChatGPT hasta Claude—se construyen sobre los principios fundamentales de los transformers."
+    },
+    {
+      title: "TypeScript: Por qué todo el mundo lo usa ahora",
+      author: "Miguel Santana",
+      category: "Programación",
+      excerpt: "Descubre por qué TypeScript se ha convertido en el lenguaje predilecto para desarrollo frontend y backend moderno.",
+      content: "TypeScript agrega tipado estático a JavaScript sin perder su flexibilidad. Desde su adopción por Angular y Microsoft, ha crecido exponencialmente. La prevención de errores en tiempo de compilación, el autocompletado mejorado y la mejor documentación hacen que TypeScript sea prácticamente estándar en proyectos grandes. Aprende por qué migrar a TypeScript es una de las mejores decisiones que puede tomar tu equipo."
+    }
+  ];
+
+  (async () => {
+    const initResult = await window.dataSdk.init(dataHandler);
+    // Solo agregar ejemplos si la base de datos está vacía
+    if (initResult.isOk && articles.length === 0) {
+      for (const article of sampleArticles) {
+        await window.dataSdk.create({
+          ...article,
+          created_at: new Date().toISOString()
+        });
+      }
+    }
+  })();
+
+  // Element SDK
+  window.elementSdk.init({
+    defaultConfig,
+    onConfigChange: async (config) => {
+      const c = { ...defaultConfig, ...config };
+      document.getElementById('blog-title').textContent = c.blog_title;
+      document.getElementById('blog-subtitle').textContent = c.blog_subtitle;
+      document.getElementById('app').style.backgroundColor = c.background_color;
+      document.querySelectorAll('.bg-\\[\\#1a1f2e\\]').forEach(el => el.style.backgroundColor = c.surface_color);
+      document.getElementById('blog-title').style.fontFamily = `${c.font_family}, Outfit, sans-serif`;
+      const baseSize = c.font_size;
+      document.getElementById('blog-title').style.fontSize = `${baseSize * 1.5}px`;
+      document.getElementById('blog-subtitle').style.fontSize = `${baseSize * 0.85}px`;
+    },
+    mapToCapabilities: (config) => {
+      const c = { ...defaultConfig, ...config };
+      return {
+        recolorables: [
+          { get: () => c.background_color, set: (v) => { c.background_color = v; window.elementSdk.setConfig({ background_color: v }); } },
+          { get: () => c.surface_color, set: (v) => { c.surface_color = v; window.elementSdk.setConfig({ surface_color: v }); } },
+          { get: () => c.text_color, set: (v) => { c.text_color = v; window.elementSdk.setConfig({ text_color: v }); } },
+          { get: () => c.primary_color, set: (v) => { c.primary_color = v; window.elementSdk.setConfig({ primary_color: v }); } },
+          { get: () => c.secondary_color, set: (v) => { c.secondary_color = v; window.elementSdk.setConfig({ secondary_color: v }); } }
+        ],
+        borderables: [],
+        fontEditable: { get: () => c.font_family, set: (v) => { c.font_family = v; window.elementSdk.setConfig({ font_family: v }); } },
+        fontSizeable: { get: () => c.font_size, set: (v) => { c.font_size = v; window.elementSdk.setConfig({ font_size: v }); } }
+      };
+    },
+    mapToEditPanelValues: (config) => {
+      const c = { ...defaultConfig, ...config };
+      return new Map([
+        ['blog_title', c.blog_title],
+        ['blog_subtitle', c.blog_subtitle]
+      ]);
+    }
+  });
+
+  lucide.createIcons();
+</script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0a539e151c26dfd',t:'MTc4MTIyOTI1MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
