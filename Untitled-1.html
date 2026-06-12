@@ -223,28 +223,28 @@
      </div>
     </div>
     <div id="model-articles-grid" class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-      <article class="bg-white rounded-xl p-6 card-hover border border-slate-200">
+      <article data-category="IA" class="bg-white rounded-xl p-6 card-hover border border-slate-200">
         <span class="cat-ia text-xs font-bold px-3 py-1.5 rounded-full text-white inline-block mb-4 shadow-lg">🤖 IA</span>
         <h3 class="text-lg font-bold text-slate-900 mb-3">GPT-5: La próxima revolución en IA</h3>
         <p class="text-sm text-slate-600 mb-5 leading-relaxed">Un vistazo a los avances que harán la inteligencia artificial generativa más poderosa y accesible.</p>
         <p class="text-xs text-slate-500 mb-4">Modelo listo para inspirar tu siguiente artículo.</p>
         <div class="mt-4 border-t border-slate-200 pt-4 text-xs text-slate-500"><span class="model-author font-medium text-slate-700"></span> · <span class="model-date"></span></div>
       </article>
-      <article class="bg-white rounded-xl p-6 card-hover border border-slate-200">
+      <article data-category="Programación" class="bg-white rounded-xl p-6 card-hover border border-slate-200">
         <span class="cat-prog text-xs font-bold px-3 py-1.5 rounded-full text-white inline-block mb-4 shadow-lg">💻 Programación</span>
         <h3 class="text-lg font-bold text-slate-900 mb-3">Rust vs Go: ¿Cuál elegir?</h3>
         <p class="text-sm text-slate-600 mb-5 leading-relaxed">Comparativa clara de dos lenguajes modernos para desarrollo rápido y seguro.</p>
         <p class="text-xs text-slate-500 mb-4">Perfecto como artículo técnico de referencia.</p>
         <div class="mt-4 border-t border-slate-200 pt-4 text-xs text-slate-500"><span class="model-author font-medium text-slate-700"></span> · <span class="model-date"></span></div>
       </article>
-      <article class="bg-white rounded-xl p-6 card-hover border border-slate-200">
+      <article data-category="Videojuegos" class="bg-white rounded-xl p-6 card-hover border border-slate-200">
         <span class="cat-games text-xs font-bold px-3 py-1.5 rounded-full text-white inline-block mb-4 shadow-lg">🎮 Videojuegos</span>
         <h3 class="text-lg font-bold text-slate-900 mb-3">Baldur's Gate 3: Narrativa interactiva</h3>
         <p class="text-sm text-slate-600 mb-5 leading-relaxed">Análisis del RPG que redefine la historia y las decisiones en los videojuegos.</p>
         <p class="text-xs text-slate-500 mb-4">Una guía de temas para un artículo de gaming profundo.</p>
         <div class="mt-4 border-t border-slate-200 pt-4 text-xs text-slate-500"><span class="model-author font-medium text-slate-700"></span> · <span class="model-date"></span></div>
       </article>
-      <article class="bg-white rounded-xl p-6 card-hover border border-slate-200">
+      <article data-category="Innovación" class="bg-white rounded-xl p-6 card-hover border border-slate-200">
         <span class="cat-innov text-xs font-bold px-3 py-1.5 rounded-full text-white inline-block mb-4 shadow-lg">🚀 Innovación</span>
         <h3 class="text-lg font-bold text-slate-900 mb-3">Blockchain más allá del Bitcoin</h3>
         <p class="text-sm text-slate-600 mb-5 leading-relaxed">Explora aplicaciones innovadoras de blockchain fuera del mundo de las criptomonedas.</p>
@@ -341,38 +341,58 @@
     }
     empty.classList.add('hidden');
 
-    const existingCards = new Map([...grid.children].map(el => [el.dataset.id, el]));
-    const fragment = document.createDocumentFragment();
+    const categories = ['IA', 'Programación', 'Videojuegos', 'Innovación'];
+    const grouped = categories.reduce((acc, cat) => {
+      acc[cat] = [];
+      return acc;
+    }, {});
 
-    filtered.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).forEach(article => {
-      const id = article.__backendId;
-      if (existingCards.has(id)) {
-        const el = existingCards.get(id);
-        el.querySelector('.card-title').textContent = article.title;
-        el.querySelector('.card-excerpt').textContent = article.excerpt;
-        el.querySelector('.card-author').textContent = article.author;
-        fragment.appendChild(el);
-        existingCards.delete(id);
-      } else {
+    filtered.forEach(article => {
+      if (grouped[article.category]) {
+        grouped[article.category].push(article);
+      }
+    });
+
+    grid.innerHTML = '';
+    categories.forEach(category => {
+      const categoryArticles = grouped[category];
+      if (!categoryArticles || categoryArticles.length === 0) return;
+
+      const section = document.createElement('section');
+      section.className = 'mb-10';
+      section.innerHTML = `
+        <div class="mb-6 flex items-center justify-between">
+          <div>
+            <h2 class="text-xl font-bold text-slate-900">${catEmoji(category)} ${category}</h2>
+            <p class="text-sm text-slate-500">${categoryArticles.length} artículo${categoryArticles.length > 1 ? 's' : ''} en esta categoría.</p>
+          </div>
+        </div>
+      `;
+
+      const cardsContainer = document.createElement('div');
+      cardsContainer.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6';
+
+      categoryArticles.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).forEach(article => {
         const card = document.createElement('div');
+        const id = article.__backendId || article.id || article._id || article.title;
         card.dataset.id = id;
         card.className = 'bg-white rounded-xl p-6 card-hover cursor-pointer border border-slate-200 group';
         card.innerHTML = `
           <span class="${catClass(article.category)} text-xs font-bold px-3 py-1.5 rounded-full text-white inline-block mb-4 shadow-lg">${catEmoji(article.category)} ${article.category}</span>
-          <h3 class="card-title text-lg font-bold text-[#f1f5f9] mb-3 line-clamp-2 group-hover:text-[#c7d2e0] transition-colors">${article.title}</h3>
+          <h3 class="card-title text-lg font-bold text-slate-900 mb-3 line-clamp-2 group-hover:text-slate-700 transition-colors">${article.title}</h3>
           <p class="card-excerpt text-sm text-slate-600 mb-5 line-clamp-3 leading-relaxed">${article.excerpt}</p>
           <div class="flex justify-between items-center pt-4 border-t border-slate-200">
             <p class="text-xs text-slate-500"><span class="card-author font-medium text-slate-700">${article.author}</span> · ${new Date(article.created_at).toLocaleDateString('es')}</p>
-            <i data-lucide="arrow-right" style="width:16px;height:16px;" class="text-[#6366f1] opacity-0 group-hover:opacity-100 transition-opacity"></i>
+            <i data-lucide="arrow-right" style="width:16px;height:16px;" class="text-[#f97316] opacity-0 group-hover:opacity-100 transition-opacity"></i>
           </div>
         `;
         card.addEventListener('click', () => openDetail(article));
-        fragment.appendChild(card);
-      }
+        cardsContainer.appendChild(card);
+      });
+
+      section.appendChild(cardsContainer);
+      grid.appendChild(section);
     });
-    existingCards.forEach(el => el.remove());
-    grid.innerHTML = '';
-    grid.appendChild(fragment);
   }
 
   function openDetail(article) {
@@ -387,6 +407,21 @@
     document.getElementById('modal-detail').classList.remove('hidden');
   }
 
+  function filterModelArticles() {
+    const modelSection = document.getElementById('model-articles-grid');
+    if (!modelSection) return;
+    const cards = modelSection.querySelectorAll('article');
+    let visibleCount = 0;
+
+    cards.forEach(card => {
+      const matches = currentFilter === 'all' || card.dataset.category === currentFilter;
+      card.style.display = matches ? '' : 'none';
+      if (matches) visibleCount += 1;
+    });
+
+    modelSection.style.display = visibleCount === 0 ? 'none' : 'grid';
+  }
+
   // Filters
   document.querySelectorAll('.filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -397,6 +432,7 @@
           : 'filter-btn px-3 py-1.5 rounded-full text-xs font-medium bg-slate-100 text-slate-600 hover:bg-[#f97316] hover:text-white';
       });
       renderArticles();
+      filterModelArticles();
     });
   });
 
@@ -413,29 +449,62 @@
   // Form submit
   document.getElementById('form-article').addEventListener('submit', async (e) => {
     e.preventDefault();
+    const title = document.getElementById('inp-title').value.trim();
+    const author = document.getElementById('inp-author').value.trim();
+    const category = document.getElementById('inp-category').value;
+    const excerpt = document.getElementById('inp-excerpt').value.trim();
+    const content = document.getElementById('inp-content').value.trim();
+
+    if (!title || !author || !excerpt || !content) {
+      const btn = document.getElementById('btn-submit');
+      btn.textContent = 'Complete todos los campos';
+      setTimeout(() => { btn.textContent = 'Publicar'; }, 1800);
+      return;
+    }
     if (articles.length >= 999) {
       document.getElementById('btn-submit').textContent = '⚠️ Límite alcanzado (999)';
       return;
     }
+
     const btn = document.getElementById('btn-submit');
     btn.disabled = true;
     btn.textContent = 'Publicando...';
 
-    const result = await window.dataSdk.create({
-      title: document.getElementById('inp-title').value,
-      author: document.getElementById('inp-author').value,
-      category: document.getElementById('inp-category').value,
-      excerpt: document.getElementById('inp-excerpt').value,
-      content: document.getElementById('inp-content').value,
+    const newArticle = {
+      title,
+      author,
+      category,
+      excerpt,
+      content,
       created_at: new Date().toISOString()
-    });
+    };
+
+    let created = null;
+    try {
+      if (window.dataSdk && typeof window.dataSdk.create === 'function') {
+        const result = await window.dataSdk.create(newArticle);
+        if (result && result.isOk) {
+          created = result.data || result.value || result.item || newArticle;
+        }
+      }
+    } catch (error) {
+      console.error('Error al crear artículo:', error);
+    }
+
+    if (!created) {
+      created = newArticle;
+    }
+
+    const backendId = created.__backendId || created.id || created._id || `local-${Date.now()}`;
+    const articleWithId = { ...newArticle, __backendId: backendId };
+
+    articles.push(articleWithId);
+    renderArticles();
 
     btn.disabled = false;
     btn.textContent = 'Publicar';
-    if (result.isOk) {
-      document.getElementById('form-article').reset();
-      document.getElementById('modal-new').classList.add('hidden');
-    }
+    document.getElementById('form-article').reset();
+    document.getElementById('modal-new').classList.add('hidden');
   });
 
   // Delete
@@ -446,16 +515,29 @@
   document.getElementById('btn-confirm-delete').addEventListener('click', async () => {
     if (!selectedArticle) return;
     const btn = document.getElementById('btn-confirm-delete');
+    const articleToDelete = selectedArticle;
+    const deleteId = articleToDelete.__backendId || articleToDelete.id || articleToDelete._id || articleToDelete.title;
+
+    // Cerrar modales y eliminar inmediatamente de la vista
+    document.getElementById('modal-delete').classList.add('hidden');
+    document.getElementById('modal-detail').classList.add('hidden');
+    articles = articles.filter(a => (a.__backendId || a.id || a._id || a.title) !== deleteId);
+    renderArticles();
+    selectedArticle = null;
+
     btn.disabled = true;
     btn.textContent = 'Eliminando...';
-    const result = await window.dataSdk.delete(selectedArticle);
+
+    try {
+      if (window.dataSdk && typeof window.dataSdk.delete === 'function') {
+        await window.dataSdk.delete(articleToDelete);
+      }
+    } catch (error) {
+      console.warn('Error al eliminar del backend:', error);
+    }
+
     btn.disabled = false;
     btn.textContent = 'Eliminar';
-    if (result.isOk) {
-      document.getElementById('modal-delete').classList.add('hidden');
-      document.getElementById('modal-detail').classList.add('hidden');
-      selectedArticle = null;
-    }
   });
 
   function randomModelInfo() {
@@ -485,6 +567,7 @@
   }
 
   randomModelInfo();
+  filterModelArticles();
 
   // Data SDK
   const dataHandler = {
